@@ -26,6 +26,7 @@ public class MainActivity extends Activity {
     private Button openSyncthingButton;
     private Button testStopButton;
     private Button testFollowButton;
+    private Button finishSetupButton;
 
     private boolean darkMode;
     private int backgroundColor;
@@ -187,13 +188,17 @@ public class MainActivity extends Activity {
         root.addView(testRow);
 
         TextView footer = text(
-                "You can leave SleepSync normally using Home or by swiping up from the bottom. Do not swipe SleepSync away from the recent-apps screen, as some Android builds may stop the background service. SleepSync starts again automatically after reboot when enabled.",
+                "When setup is complete, tap Finish setup or leave normally with Home / swipe up from the bottom. Do not dismiss SleepSync from the recent-apps screen on devices where doing so stops the background service. SleepSync starts again automatically after reboot when enabled.",
                 13,
                 false
         );
         footer.setTextColor(secondaryTextColor);
         footer.setPadding(0, dp(28), 0, 0);
         root.addView(footer);
+
+        finishSetupButton = button("Finish setup");
+        finishSetupButton.setOnClickListener(v -> leaveUiSafely());
+        addWithTopMargin(root, finishSetupButton, 12);
 
         return scroll;
     }
@@ -223,6 +228,7 @@ public class MainActivity extends Activity {
         openSyncthingButton.setEnabled(installed);
         testStopButton.setEnabled(installed);
         testFollowButton.setEnabled(installed);
+        finishSetupButton.setEnabled(enabled && running);
 
         String lastEvent = SleepSyncPrefs.getLastEvent(this);
         long lastTime = SleepSyncPrefs.getLastEventTime(this);
@@ -257,6 +263,12 @@ public class MainActivity extends Activity {
         } catch (Exception e) {
             SleepSyncPrefs.recordEvent(this, "Unable to restart: " + e.getClass().getSimpleName());
             toast("Unable to restart SleepSync: " + e.getClass().getSimpleName());
+        }
+    }
+
+    private void leaveUiSafely() {
+        if (!moveTaskToBack(true)) {
+            finish();
         }
     }
 
