@@ -7,6 +7,7 @@
 - If SleepSync is still enabled but the service is no longer running, reopening the app starts the service again automatically instead of requiring Disable / Enable.
 - Add a **Finish setup** button that backgrounds the SleepSync interface without stopping the foreground service. Using Home / swipe-up from the bottom has the same effect.
 - Clarify that dismissing SleepSync from the recent-apps screen may stop the background service on some Android builds and should be avoided on affected devices.
+- Add proper Android adaptive launcher icons, legacy density fallbacks, and a monochrome themed-icon layer for supported Android versions.
 - No changes to the Syncthing STOP / FOLLOW logic.
 
 ## 1.0.0
