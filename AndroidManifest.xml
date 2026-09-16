@@ -16,8 +16,8 @@
 
     <application
         android:allowBackup="false"
-        android:icon="@drawable/ic_sleepsync"
-        android:roundIcon="@drawable/ic_sleepsync"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="SleepSync"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
