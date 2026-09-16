@@ -18,5 +18,5 @@ adb install -r "$ROOT/SleepSync.apk"
 adb shell monkey -p com.med.sleepsync -c android.intent.category.LAUNCHER 1 >/dev/null
 
 echo
-echo "SleepSync 1.0.0 installed and opened."
+echo "SleepSync 1.0.1 installed and opened."
 echo "Enable Syncthing-Fork → Settings → Behaviour → Service Control by Broadcast, then tap Enable SleepSync."
