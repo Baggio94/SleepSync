@@ -12,14 +12,14 @@ In my own testing on a Retroid Pocket Classic, overnight battery drain dropped f
 
 ## Clamshell handhelds
 
-SleepSync also works with **clamshell handhelds** and other Android devices with a lid.
+SleepSync also works with **clamshell handhelds** and other Android devices with a lid — including the **AYN Thor**.
 
-If closing the lid turns the screen off:
+On the AYN Thor:
 
 - **Close the lid** → screen OFF → Syncthing `STOP`
 - **Open the lid** → screen ON → `FOLLOW` → Syncthing resumes normally
 
-So closing a compatible clamshell handheld has the same SleepSync effect as pressing the power button to turn the display off.
+The same behavior applies to other compatible Android clamshell handhelds when closing/opening the lid turns the screen off/on.
 
 ## Features
 
@@ -27,7 +27,7 @@ So closing a compatible clamshell handheld has the same SleepSync effect as pres
 - Screen ON → sends `FOLLOW` after a short delay
 - Automatically restarts after device reboot
 - Runs in the background even when the SleepSync interface is closed
-- Supports clamshell / lid-equipped Android handhelds when lid close turns the screen off
+- Supports clamshell / lid-equipped Android handhelds such as the AYN Thor
 - Follows the Android system light/dark theme
 - Shows the last activity directly in the app
 - Includes manual `Test STOP` and `Test FOLLOW` buttons
@@ -45,12 +45,9 @@ After that, the SleepSync interface can be closed. If enabled, the service start
 
 ## Tested
 
-Validated on Retroid Pocket Classic for:
+Validated on:
 
-- screen OFF → STOP;
-- screen ON → FOLLOW;
-- service operation while the UI is closed;
-- app update with settings preserved;
-- automatic restart after reboot.
+- **Retroid Pocket Classic** — screen OFF/ON behavior, background operation, app update with settings preserved, and automatic restart after reboot
+- **AYN Thor** — clamshell lid close/open behavior with Syncthing STOP/FOLLOW
 
 SleepSync is an independent, unofficial companion project and is not affiliated with or endorsed by the Syncthing or Syncthing-Fork projects.
