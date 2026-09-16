@@ -188,7 +188,7 @@ public class MainActivity extends Activity {
         root.addView(testRow);
 
         TextView footer = text(
-                "When setup is complete, tap Finish setup or leave normally with Home / swipe up from the bottom. Do not dismiss SleepSync from the recent-apps screen on devices where doing so stops the background service. SleepSync starts again automatically after reboot when enabled.",
+                "Once enabled, you can close SleepSync. It continues in the background and starts again automatically after reboot. Don't kill SleepSync from the task switcher.",
                 13,
                 false
         );
