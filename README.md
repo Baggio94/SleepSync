@@ -4,11 +4,19 @@
   <img src="assets/sleepsync-icon.png" width="160" alt="SleepSync icon">
 </p>
 
-**SleepSync** is a small Android companion app for **Syncthing-Fork**. It pauses Syncthing when the screen turns off and returns it to its normal run-condition behavior when the screen turns back on.
+**SleepSync** is a small Android companion app for **Syncthing-Fork** designed to reduce standby battery drain by stopping Syncthing while your device is asleep and returning it to its normal run-condition behavior as soon as the device wakes.
 
 > SleepSync is an independent, unofficial companion project and is not affiliated with or endorsed by the Syncthing or Syncthing-Fork projects.
 
 No computer, ADB, account, or manual service restart is required for normal use.
+
+## Why SleepSync?
+
+Syncthing can continue running while an Android handheld is asleep, which may cause significant overnight battery drain on some devices.
+
+SleepSync solves this by stopping Syncthing whenever the screen turns off, then immediately returning Syncthing-Fork to its normal run conditions when the screen wakes.
+
+In my own testing on a Retroid Pocket Classic, overnight battery drain dropped from about **14% to 2%** after using SleepSync to keep Syncthing stopped during sleep. Battery savings will vary by device, configuration, network conditions, and battery health, but reducing unnecessary background activity during sleep can make a major difference.
 
 ## What it does
 
@@ -20,7 +28,16 @@ No computer, ADB, account, or manual service restart is required for normal use.
 - Shows the **last activity** directly in the app
 - Includes manual **Test STOP** and **Test FOLLOW** buttons
 
-SleepSync reacts to Android's screen state, so it works both on standard Android devices and on clamshell handhelds where closing the lid turns the display off.
+## Clamshell and lid-equipped handhelds
+
+SleepSync also works naturally with **clamshell handhelds** and other Android devices with a lid.
+
+If closing the lid turns the screen off, SleepSync treats it exactly like pressing the power button:
+
+- **Close the lid** → screen OFF → Syncthing `STOP`
+- **Open the lid** → screen ON → `FOLLOW` → Syncthing resumes normally
+
+So on devices such as dual-screen or clamshell Android handhelds, simply closing the device also stops Syncthing and helps avoid unnecessary battery drain while it is sleeping.
 
 ## Requirements
 
@@ -56,9 +73,9 @@ Open SleepSync and use the buttons under **Advanced test**:
 ### Real-world test
 
 1. Leave Syncthing-Fork connected to another device.
-2. Turn the Android screen off.
+2. Turn the Android screen off, or close the lid on a clamshell device.
 3. Syncthing-Fork should stop and disconnect.
-4. Turn the screen back on.
+4. Turn the screen back on, or reopen the lid.
 5. After about one second, SleepSync sends `FOLLOW` and Syncthing-Fork can reconnect.
 
 You can reopen SleepSync at any time to see its **Last activity**.
@@ -83,6 +100,7 @@ SleepSync:
 - Force-stopping SleepSync in Android Settings prevents it from running until you open the app again.
 - Manufacturer-specific battery management varies. If a device aggressively kills background services, exempt SleepSync from that device's battery restrictions.
 - Disabling SleepSync sends `FOLLOW` once so Syncthing-Fork is not accidentally left stopped.
+- On clamshell devices, SleepSync relies on the lid action causing Android to turn the screen off/on.
 
 ## Compatibility
 
