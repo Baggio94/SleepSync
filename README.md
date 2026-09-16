@@ -4,87 +4,53 @@
   <img src="assets/sleepsync-icon.png" width="160" alt="SleepSync icon">
 </p>
 
-**SleepSync** is a small Android companion app for **Syncthing-Fork** designed to reduce standby battery drain by stopping Syncthing while your device is asleep and returning it to its normal run-condition behavior as soon as the device wakes.
+**SleepSync helps reduce standby battery drain from Syncthing-Fork on Android handhelds.**
 
-> SleepSync is an independent, unofficial companion project and is not affiliated with or endorsed by the Syncthing or Syncthing-Fork projects.
+When your device goes to sleep, SleepSync stops Syncthing. As soon as the device wakes, it sends `FOLLOW` so Syncthing can resume according to its normal run conditions.
 
-No computer, ADB, account, or manual service restart is required for normal use.
+On my **AYN Thor**, overnight battery drain dropped from about **14% to 2%** after using SleepSync to keep Syncthing stopped during sleep. Battery savings will vary by device and setup.
 
-## Why SleepSync?
+## How it works
 
-Syncthing can continue running while an Android handheld is asleep, which may cause significant overnight battery drain on some devices.
+| Device state | SleepSync action |
+| --- | --- |
+| **Screen OFF** | Sends `STOP` to Syncthing-Fork |
+| **Screen ON** | Waits 1 second, then sends `FOLLOW` |
+| **Device reboot** | Starts again automatically if SleepSync was enabled |
 
-SleepSync solves this by stopping Syncthing whenever the screen turns off, then immediately returning Syncthing-Fork to its normal run conditions when the screen wakes.
+SleepSync keeps working even when its interface is closed.
 
-In my own testing on an **AYN Thor**, overnight battery drain dropped from about **14% to 2%** after using SleepSync to keep Syncthing stopped during sleep. Battery savings will vary by device, configuration, network conditions, and battery health, but reducing unnecessary background activity during sleep can make a major difference.
+### Clamshell handhelds
 
-## What it does
+SleepSync also works with **clamshell Android handhelds** such as the **AYN Thor**.
 
-- **Screen OFF** → sends `STOP` to Syncthing-Fork
-- **Screen ON** → waits 1 second → sends `FOLLOW`
-- **Reboot** → automatically starts again if SleepSync was enabled
-- Runs even when the SleepSync interface is closed
-- Follows Android's **light / dark theme**
-- Shows the **last activity** directly in the app
-- Includes manual **Test STOP** and **Test FOLLOW** buttons
+- **Close the lid** → screen OFF → Syncthing `STOP`
+- **Open the lid** → screen ON → `FOLLOW`
 
-## Clamshell and lid-equipped handhelds
-
-SleepSync also works naturally with **clamshell handhelds** and other Android devices with a lid — including the **AYN Thor**.
-
-On the AYN Thor, closing the lid turns the display off, so SleepSync treats it exactly like pressing the power button:
-
-- **Close the AYN Thor lid** → screen OFF → Syncthing `STOP`
-- **Open the AYN Thor lid** → screen ON → `FOLLOW` → Syncthing resumes normally
-
-The same behavior applies to other Android clamshell handhelds when their lid action turns the screen off/on. This means simply closing the handheld also stops Syncthing and helps avoid unnecessary battery drain while the device is sleeping.
-
-## Requirements
-
-You need **Syncthing-Fork** installed.
-
-In Syncthing-Fork, enable:
-
-**Settings → Behaviour → Service Control by Broadcast**
-
-That setting is required because SleepSync controls Syncthing-Fork through its built-in broadcast interface.
+The same behavior should apply to other Android handhelds where closing the lid turns the screen off.
 
 ## Installation
 
-1. Download `SleepSync.apk` from the latest GitHub Release.
-2. Install the APK on your Android device.
-3. Open **SleepSync**.
-4. Confirm that Syncthing-Fork is detected.
-5. Make sure **Service Control by Broadcast** is enabled in Syncthing-Fork.
-6. Tap **Enable SleepSync**.
-7. You can now close SleepSync.
+1. Install **Syncthing-Fork**.
+2. In Syncthing-Fork, enable **Settings → Behaviour → Service Control by Broadcast**.
+3. Download and install `SleepSync.apk` from the latest GitHub Release.
+4. Open **SleepSync** and tap **Enable SleepSync**.
 
-That's it.
+That's it. You can close the SleepSync interface after enabling it.
 
-## How to test it
+No computer, ADB, account, or manual service restart is required for normal use.
 
-### Manual test
+## Tested on
 
-Open SleepSync and use the buttons under **Advanced test**:
+- **AYN Thor** — lid close/open behavior, Syncthing STOP/FOLLOW, and the overnight battery test above
+- **Retroid Pocket Classic** — screen OFF/ON behavior, background operation, app updates, and automatic restart after reboot
 
-- **Test STOP** should stop Syncthing-Fork.
-- **Test FOLLOW** should let Syncthing-Fork resume according to its own run conditions.
+## Useful extras
 
-### Real-world test
-
-1. Leave Syncthing-Fork connected to another device.
-2. Turn the Android screen off, or close the lid on a clamshell device such as the AYN Thor.
-3. Syncthing-Fork should stop and disconnect.
-4. Turn the screen back on, or reopen the lid.
-5. After about one second, SleepSync sends `FOLLOW` and Syncthing-Fork can reconnect.
-
-You can reopen SleepSync at any time to see its **Last activity**.
-
-## Background behavior
-
-SleepSync uses an Android foreground service so screen state monitoring remains reliable after the UI is closed.
-
-On Android 13+, SleepSync does not request notification permission. Android may still list the service in the system **Active apps** / foreground-service manager. Some customized Android versions may show a minimal service notification.
+- Follows Android's **light / dark theme**
+- Shows the **last activity** directly in the app
+- Includes manual **Test STOP** and **Test FOLLOW** buttons
+- Restarts automatically after reboot when enabled
 
 ## Privacy
 
@@ -95,12 +61,13 @@ SleepSync:
 - does not access Syncthing credentials, device IDs, folders, or configuration;
 - only monitors Android screen ON/OFF events and sends `STOP` / `FOLLOW` broadcasts to Syncthing-Fork.
 
-## Important notes
+## Background behavior
 
-- Force-stopping SleepSync in Android Settings prevents it from running until you open the app again.
-- Manufacturer-specific battery management varies. If a device aggressively kills background services, exempt SleepSync from that device's battery restrictions.
-- Disabling SleepSync sends `FOLLOW` once so Syncthing-Fork is not accidentally left stopped.
-- On clamshell devices, SleepSync relies on the lid action causing Android to turn the screen off/on.
+SleepSync uses an Android foreground service so screen-state monitoring remains reliable after the interface is closed.
+
+On Android 13+, SleepSync does not request notification permission. Android may still show it under **Active apps** / the foreground-service manager, and some Android builds may display a minimal service notification.
+
+If you **Force stop** SleepSync in Android Settings, open the app again to reactivate it. On devices with aggressive battery management, you may also need to exempt SleepSync from battery restrictions.
 
 ## Compatibility
 
@@ -109,27 +76,20 @@ SleepSync:
 - Syncthing-Fork package: `com.github.catfriend1.syncthingfork`
 - SleepSync package: `com.med.sleepsync`
 
-SleepSync 1.0.0 has been validated on:
+## Building from source
 
-- **Retroid Pocket Classic** — screen OFF/ON behavior, app updates, and automatic restart after reboot
-- **AYN Thor** — clamshell lid close/open behavior with Syncthing STOP/FOLLOW, including the overnight battery-drain test described above
-
-## Building from source on macOS
-
-The repository includes a lightweight build script that uses the Android SDK installed on the Mac.
+On macOS with the Android SDK installed:
 
 ```bash
 ./build_apk_mac.sh
 ```
 
-The resulting APK is created as:
+The resulting APK is created as `SleepSync.apk`.
 
-```text
-SleepSync.apk
-```
+For development and device testing, see [`DEV_TEST.md`](DEV_TEST.md).
 
-For development / device testing, see [`DEV_TEST.md`](DEV_TEST.md).
+---
 
-## Version
+SleepSync is an independent, unofficial companion project and is not affiliated with or endorsed by the Syncthing or Syncthing-Fork projects.
 
-Current release: **1.0.0**
+**Current version: 1.0.0**
