@@ -8,7 +8,7 @@ SleepSync is an Android companion for Syncthing-Fork designed primarily to reduc
 
 On some Android handhelds, Syncthing can keep running during sleep and cause substantial overnight battery drain.
 
-In my own testing on a Retroid Pocket Classic, overnight battery drain dropped from about **14% to 2%** after using SleepSync to keep Syncthing stopped while the device was asleep. Actual battery savings will vary by device, configuration, network conditions, and battery health.
+In my own testing on an **AYN Thor**, overnight battery drain dropped from about **14% to 2%** after using SleepSync to keep Syncthing stopped while the device was asleep. Actual battery savings will vary by device, configuration, network conditions, and battery health.
 
 ## Clamshell handhelds
 
@@ -48,6 +48,6 @@ After that, the SleepSync interface can be closed. If enabled, the service start
 Validated on:
 
 - **Retroid Pocket Classic** — screen OFF/ON behavior, background operation, app update with settings preserved, and automatic restart after reboot
-- **AYN Thor** — clamshell lid close/open behavior with Syncthing STOP/FOLLOW
+- **AYN Thor** — clamshell lid close/open behavior with Syncthing STOP/FOLLOW, including the overnight battery-drain test described above
 
 SleepSync is an independent, unofficial companion project and is not affiliated with or endorsed by the Syncthing or Syncthing-Fork projects.
