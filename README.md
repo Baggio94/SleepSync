@@ -16,7 +16,7 @@ Syncthing can continue running while an Android handheld is asleep, which may ca
 
 SleepSync solves this by stopping Syncthing whenever the screen turns off, then immediately returning Syncthing-Fork to its normal run conditions when the screen wakes.
 
-In my own testing on a Retroid Pocket Classic, overnight battery drain dropped from about **14% to 2%** after using SleepSync to keep Syncthing stopped during sleep. Battery savings will vary by device, configuration, network conditions, and battery health, but reducing unnecessary background activity during sleep can make a major difference.
+In my own testing on an **AYN Thor**, overnight battery drain dropped from about **14% to 2%** after using SleepSync to keep Syncthing stopped during sleep. Battery savings will vary by device, configuration, network conditions, and battery health, but reducing unnecessary background activity during sleep can make a major difference.
 
 ## What it does
 
@@ -112,7 +112,7 @@ SleepSync:
 SleepSync 1.0.0 has been validated on:
 
 - **Retroid Pocket Classic** — screen OFF/ON behavior, app updates, and automatic restart after reboot
-- **AYN Thor** — clamshell lid close/open behavior with Syncthing STOP/FOLLOW
+- **AYN Thor** — clamshell lid close/open behavior with Syncthing STOP/FOLLOW, including the overnight battery-drain test described above
 
 ## Building from source on macOS
 
