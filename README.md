@@ -92,4 +92,4 @@ For development and device testing, see [`DEV_TEST.md`](DEV_TEST.md).
 
 SleepSync is an independent, unofficial companion project and is not affiliated with or endorsed by the Syncthing or Syncthing-Fork projects.
 
-**Current version: 1.0.0**
+**Current version: 1.0.1**
