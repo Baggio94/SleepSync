@@ -18,7 +18,7 @@ On my **AYN Thor**, overnight battery drain dropped from about **14% to 2%** aft
 | **Screen ON** | Waits 1 second, then sends `FOLLOW` |
 | **Device reboot** | Starts again automatically if SleepSync was enabled |
 
-SleepSync keeps working even when its interface is closed.
+SleepSync keeps working when its interface is no longer on screen.
 
 ### Clamshell handhelds
 
@@ -35,14 +35,15 @@ The same behavior should apply to other Android handhelds where closing the lid 
 2. In Syncthing-Fork, enable **Settings → Behaviour → Service Control by Broadcast**.
 3. Download and install `SleepSync.apk` from the latest GitHub Release.
 4. Open **SleepSync** and tap **Enable SleepSync**.
+5. Once the status shows **✓ Active**, tap **Finish setup** or leave normally with Home / swipe-up.
 
-That's it. You can close the SleepSync interface after enabling it.
+That's it. No computer, ADB, account, or manual service restart is required for normal use.
 
-No computer, ADB, account, or manual service restart is required for normal use.
+> **Important:** on some Android builds, dismissing SleepSync from the recent-apps / task-switcher screen can stop its background service. Leave the app normally instead.
 
 ## Tested on
 
-- **AYN Thor** — lid close/open behavior, Syncthing STOP/FOLLOW, and the overnight battery test above
+- **AYN Thor** — lid close/open behavior, repeated Syncthing STOP/FOLLOW cycles, reboot startup, and overnight battery testing
 - **Retroid Pocket Classic** — screen OFF/ON behavior, background operation, app updates, and automatic restart after reboot
 
 ## Useful extras
@@ -50,7 +51,10 @@ No computer, ADB, account, or manual service restart is required for normal use.
 - Follows Android's **light / dark theme**
 - Shows the **last activity** directly in the app
 - Includes manual **Test STOP** and **Test FOLLOW** buttons
+- **Finish setup** backgrounds the interface without stopping the service
+- If SleepSync is still enabled but the service was stopped, reopening the app starts it again automatically
 - Restarts automatically after reboot when enabled
+- Uses Android adaptive launcher icons, including themed monochrome icons on supported Android versions
 
 ## Privacy
 
