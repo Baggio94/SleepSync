@@ -1,0 +1,19 @@
+# Build output
+build/
+out/
+*.apk
+*.ap_
+*.dex
+*.class
+
+# Signing keys - NEVER COMMIT
+*.keystore
+*.jks
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+*.iml
+.vscode/
