@@ -26,6 +26,7 @@ public class MainActivity extends Activity {
     private Button openSyncthingButton;
     private Button testStopButton;
     private Button testFollowButton;
+    private Button doneButton;
 
     private boolean darkMode;
     private int backgroundColor;
@@ -49,6 +50,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        ensureServiceRunningIfEnabled();
         refreshUi();
     }
 
@@ -186,13 +188,17 @@ public class MainActivity extends Activity {
         root.addView(testRow);
 
         TextView footer = text(
-                "Once enabled, you can close SleepSync. It continues in the background and starts again automatically after reboot.",
+                "Tap Done to leave the SleepSync screen while keeping the background service active. If the service is ever stopped, reopening SleepSync will start it again automatically.",
                 13,
                 false
         );
         footer.setTextColor(secondaryTextColor);
         footer.setPadding(0, dp(28), 0, 0);
         root.addView(footer);
+
+        doneButton = button("Done");
+        doneButton.setOnClickListener(v -> leaveUiSafely());
+        addWithTopMargin(root, doneButton, 12);
 
         return scroll;
     }
@@ -238,6 +244,31 @@ public class MainActivity extends Activity {
         if (sleepSyncStatus == null) return;
         sleepSyncStatus.postDelayed(this::refreshUi, 250L);
         sleepSyncStatus.postDelayed(this::refreshUi, 1000L);
+    }
+
+    private void ensureServiceRunningIfEnabled() {
+        if (!SleepSyncPrefs.isEnabled(this) || SleepSyncService.isRunning()) return;
+        if (!SyncthingController.isInstalled(this)) return;
+
+        Intent service = new Intent(this, SleepSyncService.class);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(service);
+            } else {
+                startService(service);
+            }
+            SleepSyncPrefs.recordEvent(this, "SleepSync service restarted on app open");
+            scheduleUiRefresh();
+        } catch (Exception e) {
+            SleepSyncPrefs.recordEvent(this, "Unable to restart: " + e.getClass().getSimpleName());
+            toast("Unable to restart SleepSync: " + e.getClass().getSimpleName());
+        }
+    }
+
+    private void leaveUiSafely() {
+        if (!moveTaskToBack(true)) {
+            finish();
+        }
     }
 
     private void toggleSleepSync() {
