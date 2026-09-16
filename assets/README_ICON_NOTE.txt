@@ -1,0 +1,1 @@
+The README icon asset is intended to have transparent outer corners.
