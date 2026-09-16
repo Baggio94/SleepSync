@@ -1,6 +1,6 @@
 # SleepSync
 
-<p align="center">
+<p align="left">
   <img src="assets/sleepsync-icon.png" width="160" alt="SleepSync icon">
 </p>
 
