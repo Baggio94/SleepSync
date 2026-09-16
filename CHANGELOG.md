@@ -5,7 +5,8 @@
 - Fix the SleepSync status UI after enabling the service.
 - The app now refreshes the status shortly after foreground-service startup so `Enabled • service starting` automatically becomes `✓ Active` without leaving and reopening the app.
 - If SleepSync is still enabled but the service is no longer running, reopening the app starts the service again automatically instead of requiring Disable / Enable.
-- Clarify that leaving the app normally with Home / swipe-up is fine, but swiping SleepSync away from Recents may stop the background service on some Android builds.
+- Add a **Finish setup** button that backgrounds the SleepSync interface without stopping the foreground service. Using Home / swipe-up from the bottom has the same effect.
+- Clarify that dismissing SleepSync from the recent-apps screen may stop the background service on some Android builds and should be avoided on affected devices.
 - No changes to the Syncthing STOP / FOLLOW logic.
 
 ## 1.0.0
