@@ -93,7 +93,7 @@ public class MainActivity extends Activity {
         TextView title = text("SleepSync", 30, true);
         root.addView(title);
 
-        TextView version = text("Version 1.0.0", 13, false);
+        TextView version = text("Version 1.0.1", 13, false);
         version.setTextColor(secondaryTextColor);
         version.setPadding(0, dp(2), 0, 0);
         root.addView(version);
@@ -234,6 +234,12 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void scheduleUiRefresh() {
+        if (sleepSyncStatus == null) return;
+        sleepSyncStatus.postDelayed(this::refreshUi, 250L);
+        sleepSyncStatus.postDelayed(this::refreshUi, 1000L);
+    }
+
     private void toggleSleepSync() {
         boolean enabled = SleepSyncPrefs.isEnabled(this);
         if (enabled) {
@@ -263,6 +269,7 @@ public class MainActivity extends Activity {
                 startService(service);
             }
             toast("SleepSync enabled");
+            scheduleUiRefresh();
         } catch (Exception e) {
             SleepSyncPrefs.setEnabled(this, false);
             SleepSyncPrefs.recordEvent(this, "Unable to start: " + e.getClass().getSimpleName());
