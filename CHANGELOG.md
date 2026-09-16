@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1
+
+- Fix the SleepSync status UI after enabling the service.
+- The app now refreshes the status shortly after foreground-service startup so `Enabled • service starting` automatically becomes `✓ Active` without leaving and reopening the app.
+- No changes to the STOP / FOLLOW background behavior.
+
 ## 1.0.0
 
 Initial public release.
