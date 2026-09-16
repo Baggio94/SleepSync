@@ -30,14 +30,14 @@ In my own testing on a Retroid Pocket Classic, overnight battery drain dropped f
 
 ## Clamshell and lid-equipped handhelds
 
-SleepSync also works naturally with **clamshell handhelds** and other Android devices with a lid.
+SleepSync also works naturally with **clamshell handhelds** and other Android devices with a lid — including the **AYN Thor**.
 
-If closing the lid turns the screen off, SleepSync treats it exactly like pressing the power button:
+On the AYN Thor, closing the lid turns the display off, so SleepSync treats it exactly like pressing the power button:
 
-- **Close the lid** → screen OFF → Syncthing `STOP`
-- **Open the lid** → screen ON → `FOLLOW` → Syncthing resumes normally
+- **Close the AYN Thor lid** → screen OFF → Syncthing `STOP`
+- **Open the AYN Thor lid** → screen ON → `FOLLOW` → Syncthing resumes normally
 
-So on devices such as dual-screen or clamshell Android handhelds, simply closing the device also stops Syncthing and helps avoid unnecessary battery drain while it is sleeping.
+The same behavior applies to other Android clamshell handhelds when their lid action turns the screen off/on. This means simply closing the handheld also stops Syncthing and helps avoid unnecessary battery drain while the device is sleeping.
 
 ## Requirements
 
@@ -73,7 +73,7 @@ Open SleepSync and use the buttons under **Advanced test**:
 ### Real-world test
 
 1. Leave Syncthing-Fork connected to another device.
-2. Turn the Android screen off, or close the lid on a clamshell device.
+2. Turn the Android screen off, or close the lid on a clamshell device such as the AYN Thor.
 3. Syncthing-Fork should stop and disconnect.
 4. Turn the screen back on, or reopen the lid.
 5. After about one second, SleepSync sends `FOLLOW` and Syncthing-Fork can reconnect.
@@ -109,7 +109,10 @@ SleepSync:
 - Syncthing-Fork package: `com.github.catfriend1.syncthingfork`
 - SleepSync package: `com.med.sleepsync`
 
-SleepSync 1.0.0 has been validated on a **Retroid Pocket Classic**, including screen OFF/ON behavior, app updates, and automatic restart after reboot.
+SleepSync 1.0.0 has been validated on:
+
+- **Retroid Pocket Classic** — screen OFF/ON behavior, app updates, and automatic restart after reboot
+- **AYN Thor** — clamshell lid close/open behavior with Syncthing STOP/FOLLOW
 
 ## Building from source on macOS
 
