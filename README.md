@@ -32,7 +32,7 @@ The same behavior should apply to other Android handhelds where closing the lid 
 ## Installation
 
 1. Install **Syncthing-Fork**.
-2. In Syncthing-Fork, enable **Settings → Behaviour → Service Control by Broadcast**.
+2. In Syncthing-Fork, enable **Settings → Behaviour → Service Control by Broadcast**. On older v1 builds, this setting may appear under **Settings → Experimental**.
 3. Download and install `SleepSync.apk` from the latest GitHub Release.
 4. Open **SleepSync** and tap **Enable SleepSync**.
 5. Once the status shows **✓ Active**, tap **Finish setup** or leave normally with Home / swipe-up.
@@ -41,6 +41,25 @@ That's it. No computer, ADB, account, or manual service restart is required for 
 
 > **Important:** on some Android builds, dismissing SleepSync from the recent-apps / task-switcher screen can stop its background service. Leave the app normally instead.
 
+## Syncthing-Fork compatibility
+
+SleepSync 1.1.0 can detect and control multiple Syncthing-Fork package variants:
+
+- Current release builds: `com.github.catfriend1.syncthingfork`
+- GitHub Actions / debug builds, including `refactorRoot`: `com.github.catfriend1.syncthingfork.debug`
+- Legacy builds: `com.github.catfriend1.syncthingandroid`
+- Legacy debug builds: `com.github.catfriend1.syncthingandroid.debug`
+
+If only one compatible build is installed, SleepSync selects it automatically. If several are installed side by side, SleepSync lets you choose which one it should control and remembers that choice.
+
+### Compatibility tested for 1.1.0
+
+The complete screen OFF → `STOP` / screen ON → `FOLLOW` flow was verified on an Android 15 emulator with:
+
+- **Syncthing-Fork 2.1.5.0** — current release package
+- **Syncthing-Fork 2.1.5.0 refactorRoot/debug build** — GitHub Actions package
+- **Syncthing-Fork 1.30.0.5** — legacy package ID
+
 ## Tested on
 
 - **AYN Thor** — lid close/open behavior, repeated Syncthing STOP/FOLLOW cycles, reboot startup, and overnight battery testing
@@ -48,6 +67,9 @@ That's it. No computer, ADB, account, or manual service restart is required for 
 
 ## Useful extras
 
+- Automatically detects supported Syncthing-Fork package variants
+- Lets you choose which Syncthing-Fork build to control when several are installed
+- Remembers the selected Syncthing-Fork target
 - Follows Android's **light / dark theme**
 - Shows the **last activity** directly in the app
 - Includes manual **Test STOP** and **Test FOLLOW** buttons
@@ -77,7 +99,6 @@ If you **Force stop** SleepSync in Android Settings, open the app again to react
 
 - Minimum Android: **Android 6.0 / API 23**
 - Target SDK: **35**
-- Syncthing-Fork package: `com.github.catfriend1.syncthingfork`
 - SleepSync package: `com.med.sleepsync`
 
 ## Building from source
@@ -96,4 +117,4 @@ For development and device testing, see [`DEV_TEST.md`](DEV_TEST.md).
 
 SleepSync is an independent, unofficial companion project and is not affiliated with or endorsed by the Syncthing or Syncthing-Fork projects.
 
-**Current version: 1.0.1**
+**Current version: 1.1.0**
