@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.1.0
+
+- Add support for multiple Syncthing-Fork package variants instead of assuming a single package ID.
+- Detect the current release package: `com.github.catfriend1.syncthingfork`.
+- Detect GitHub Actions / debug builds such as the `refactorRoot` build: `com.github.catfriend1.syncthingfork.debug`.
+- Add compatibility with older Syncthing-Fork package IDs: `com.github.catfriend1.syncthingandroid` and `com.github.catfriend1.syncthingandroid.debug`.
+- Automatically use the only compatible Syncthing-Fork build when one is installed.
+- When several compatible builds are installed side by side, allow the user to choose which one SleepSync controls.
+- Persist the selected Syncthing-Fork target across app restarts and device reboots.
+- `Open Syncthing-Fork`, `STOP`, and `FOLLOW` now use the selected/detected package dynamically.
+- When switching targets while SleepSync is enabled, release the previous target with `FOLLOW` before controlling the new target.
+- Preserve the existing screen OFF → `STOP`, screen ON → `FOLLOW`, background service, reboot restart, theme, and 1.0.x settings behavior.
+
 ## 1.0.1
 
 - Fix the SleepSync status UI after enabling the service.
