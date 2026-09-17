@@ -10,23 +10,33 @@ import android.text.format.DateFormat;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class MainActivity extends Activity {
     private TextView syncthingStatus;
     private TextView sleepSyncStatus;
     private TextView lastActivityStatus;
+    private TextView targetHint;
+    private Spinner targetSpinner;
     private Button enableButton;
     private Button openSyncthingButton;
     private Button testStopButton;
     private Button testFollowButton;
     private Button finishSetupButton;
+
+    private List<SyncthingController.Target> visibleTargets = new ArrayList<>();
+    private boolean updatingTargetSpinner = false;
 
     private boolean darkMode;
     private int backgroundColor;
@@ -95,7 +105,7 @@ public class MainActivity extends Activity {
         TextView title = text("SleepSync", 30, true);
         root.addView(title);
 
-        TextView version = text("Version 1.0.1", 13, false);
+        TextView version = text("Version 1.1.0", 13, false);
         version.setTextColor(secondaryTextColor);
         version.setPadding(0, dp(2), 0, 0);
         root.addView(version);
@@ -113,6 +123,56 @@ public class MainActivity extends Activity {
         root.addView(label("1. Syncthing-Fork"));
         syncthingStatus = statusText();
         root.addView(syncthingStatus);
+
+        targetHint = text(
+                "Multiple compatible Syncthing-Fork builds were found. Choose which one SleepSync should control:",
+                13,
+                false
+        );
+        targetHint.setTextColor(secondaryTextColor);
+        targetHint.setVisibility(View.GONE);
+        targetHint.setPadding(0, dp(12), 0, dp(4));
+        root.addView(targetHint);
+
+        targetSpinner = new Spinner(this);
+        targetSpinner.setVisibility(View.GONE);
+        targetSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (updatingTargetSpinner || position < 0 || position >= visibleTargets.size()) return;
+
+                SyncthingController.Target chosen = visibleTargets.get(position);
+                String previousPackage = SyncthingController.getTargetPackage(MainActivity.this);
+                if (chosen.packageName.equals(previousPackage)) return;
+
+                boolean enabled = SleepSyncPrefs.isEnabled(MainActivity.this);
+                if (enabled && previousPackage != null) {
+                    SyncthingController.sendFollowToPackage(
+                            MainActivity.this,
+                            previousPackage,
+                            "FOLLOW(target changed)"
+                    );
+                }
+
+                SyncthingController.selectTarget(MainActivity.this, chosen.packageName);
+
+                if (enabled) {
+                    SyncthingController.sendFollow(MainActivity.this, "FOLLOW(target changed)");
+                }
+
+                SleepSyncPrefs.recordEvent(
+                        MainActivity.this,
+                        "Syncthing target changed → " + chosen.displayName
+                );
+                toast("Using " + chosen.displayName);
+                refreshUi();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+        addWithTopMargin(root, targetSpinner, 4);
 
         openSyncthingButton = button("Open Syncthing-Fork");
         openSyncthingButton.setOnClickListener(v -> openSyncthing());
@@ -169,13 +229,19 @@ public class MainActivity extends Activity {
         testFollowButton = button("Test FOLLOW");
 
         testStopButton.setOnClickListener(v -> {
-            SyncthingController.sendStop(this);
-            toast("STOP sent to Syncthing-Fork");
+            if (SyncthingController.sendStop(this)) {
+                toast("STOP sent to selected Syncthing-Fork");
+            } else {
+                toast("No supported Syncthing-Fork target found");
+            }
             refreshUi();
         });
         testFollowButton.setOnClickListener(v -> {
-            SyncthingController.sendFollow(this);
-            toast("FOLLOW sent to Syncthing-Fork");
+            if (SyncthingController.sendFollow(this)) {
+                toast("FOLLOW sent to selected Syncthing-Fork");
+            } else {
+                toast("No supported Syncthing-Fork target found");
+            }
             refreshUi();
         });
 
@@ -206,12 +272,21 @@ public class MainActivity extends Activity {
     private void refreshUi() {
         if (syncthingStatus == null) return;
 
-        boolean installed = SyncthingController.isInstalled(this);
+        List<SyncthingController.Target> targets = SyncthingController.getInstalledTargets(this);
+        SyncthingController.Target selectedTarget = SyncthingController.getTarget(this);
+        boolean installed = selectedTarget != null;
         boolean enabled = SleepSyncPrefs.isEnabled(this);
         boolean running = SleepSyncService.isRunning();
 
-        syncthingStatus.setText(installed ? "✓ Installed" : "✕ Not installed");
-        syncthingStatus.setTextColor(installed ? successColor : errorColor);
+        if (installed) {
+            syncthingStatus.setText("✓ Installed — " + selectedTarget.displayName);
+            syncthingStatus.setTextColor(successColor);
+        } else {
+            syncthingStatus.setText("✕ No compatible Syncthing-Fork build found");
+            syncthingStatus.setTextColor(errorColor);
+        }
+
+        updateTargetPicker(targets, selectedTarget != null ? selectedTarget.packageName : null);
 
         if (enabled && running) {
             sleepSyncStatus.setText("✓ Active");
@@ -239,6 +314,41 @@ public class MainActivity extends Activity {
         } else {
             lastActivityStatus.setText("Last activity: " + lastEvent);
         }
+    }
+
+    private void updateTargetPicker(List<SyncthingController.Target> targets, String selectedPackage) {
+        visibleTargets = new ArrayList<>(targets);
+
+        if (targets.size() <= 1) {
+            targetHint.setVisibility(View.GONE);
+            targetSpinner.setVisibility(View.GONE);
+            return;
+        }
+
+        List<String> labels = new ArrayList<>();
+        int selectedIndex = 0;
+        for (int i = 0; i < targets.size(); i++) {
+            SyncthingController.Target target = targets.get(i);
+            labels.add(target.displayName);
+            if (target.packageName.equals(selectedPackage)) {
+                selectedIndex = i;
+            }
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                labels
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        updatingTargetSpinner = true;
+        targetSpinner.setAdapter(adapter);
+        targetSpinner.setSelection(selectedIndex, false);
+        updatingTargetSpinner = false;
+
+        targetHint.setVisibility(View.VISIBLE);
+        targetSpinner.setVisibility(View.VISIBLE);
     }
 
     private void scheduleUiRefresh() {
@@ -287,7 +397,7 @@ public class MainActivity extends Activity {
         }
 
         if (!SyncthingController.isInstalled(this)) {
-            toast("Install Syncthing-Fork first");
+            toast("Install a compatible Syncthing-Fork build first");
             return;
         }
 
@@ -312,7 +422,7 @@ public class MainActivity extends Activity {
 
     private void openSyncthing() {
         if (!SyncthingController.openApp(this)) {
-            toast("Unable to open Syncthing-Fork");
+            toast("Unable to open the selected Syncthing-Fork build");
         }
     }
 
