@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +30,9 @@ public class MainActivity extends Activity {
     private TextView lastActivityStatus;
     private TextView targetHint;
     private Spinner targetSpinner;
+    private TextView behavior;
     private Button enableButton;
+    private Switch chargingSwitch;
     private Button openSyncthingButton;
     private Button testStopButton;
     private Button testFollowButton;
@@ -196,11 +199,24 @@ public class MainActivity extends Activity {
         enableButton.setOnClickListener(v -> toggleSleepSync());
         addWithTopMargin(root, enableButton, 10);
 
-        TextView behavior = text(
-                "Screen OFF  →  Syncthing STOP\nScreen ON   →  Syncthing FOLLOW after 1 second",
-                15,
-                false
-        );
+        root.addView(spacer(18));
+        root.addView(label("Options"));
+        chargingSwitch = new Switch(this);
+        chargingSwitch.setText("FOLLOW Syncthing while charging");
+        chargingSwitch.setTextSize(15);
+        chargingSwitch.setTextColor(primaryTextColor);
+        chargingSwitch.setOnCheckedChangeListener((view, checked) -> {
+            if (checked == SleepSyncPrefs.isFollowWhileCharging(this)) return;
+            SleepSyncPrefs.setFollowWhileCharging(this, checked);
+            SleepSyncPrefs.recordEvent(this, "FOLLOW while charging " + (checked ? "enabled" : "disabled"));
+            refreshUi();
+        });
+        addWithTopMargin(root, chargingSwitch, 4);
+        TextView chargingHint = text("Keeps syncing on the charger while the screen is off.", 14, false);
+        chargingHint.setTextColor(secondaryTextColor);
+        root.addView(chargingHint);
+
+        behavior = text("", 15, false);
         behavior.setTextColor(secondaryTextColor);
         behavior.setPadding(0, dp(18), 0, 0);
         root.addView(behavior);
@@ -300,6 +316,11 @@ public class MainActivity extends Activity {
         }
 
         enableButton.setText(enabled ? "Disable SleepSync" : "Enable SleepSync");
+        boolean followWhileCharging = SleepSyncPrefs.isFollowWhileCharging(this);
+        behavior.setText(followWhileCharging
+                ? "Screen OFF  →  Syncthing STOP\nScreen OFF + charging  →  Syncthing FOLLOW\nScreen ON   →  Syncthing FOLLOW after 1 second"
+                : "Screen OFF  →  Syncthing STOP\nScreen ON   →  Syncthing FOLLOW after 1 second");
+        chargingSwitch.setChecked(followWhileCharging);
         openSyncthingButton.setEnabled(installed);
         testStopButton.setEnabled(installed);
         testFollowButton.setEnabled(installed);

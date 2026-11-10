@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ServiceInfo;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -43,10 +44,15 @@ public class SleepSyncService extends Service {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (Intent.ACTION_SCREEN_OFF.equals(action)) {
-                Log.i(TAG, "Screen OFF -> STOP");
-                handler.removeCallbacks(followRunnable);
-                SleepSyncPrefs.recordEvent(SleepSyncService.this, "Screen OFF → Syncthing STOP");
-                SyncthingController.sendStop(SleepSyncService.this);
+                applyScreenOffState("Screen OFF");
+            } else if (Intent.ACTION_POWER_CONNECTED.equals(action)
+                    || Intent.ACTION_POWER_DISCONNECTED.equals(action)) {
+                PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                if (pm != null && !pm.isInteractive()
+                        && SleepSyncPrefs.isFollowWhileCharging(SleepSyncService.this)) {
+                    applyScreenOffState(Intent.ACTION_POWER_CONNECTED.equals(action)
+                            ? "Charger connected" : "Charger disconnected");
+                }
             } else if (Intent.ACTION_SCREEN_ON.equals(action)) {
                 Log.i(TAG, "Screen ON -> FOLLOW scheduled");
                 handler.removeCallbacks(followRunnable);
@@ -100,6 +106,8 @@ public class SleepSyncService extends Service {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_SCREEN_ON);
+        filter.addAction(Intent.ACTION_POWER_CONNECTED);
+        filter.addAction(Intent.ACTION_POWER_DISCONNECTED);
 
         if (Build.VERSION.SDK_INT >= 33) {
             registerReceiver(screenReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
@@ -118,10 +126,27 @@ public class SleepSyncService extends Service {
             SleepSyncPrefs.recordEvent(this, "Initial state ON → FOLLOW scheduled");
             handler.postDelayed(followRunnable, 1000L);
         } else {
-            SleepSyncPrefs.recordEvent(this, "Initial state OFF → Syncthing STOP");
-            SyncthingController.sendStop(this);
-            Log.i(TAG, "Applied initial screen state: OFF");
+            applyScreenOffState("Initial state OFF");
         }
+    }
+
+    // Screen off: keep syncing while plugged in (Doze does not apply then), stop on battery.
+    private void applyScreenOffState(String reason) {
+        handler.removeCallbacks(followRunnable);
+        if (SleepSyncPrefs.isFollowWhileCharging(this) && isPluggedIn()) {
+            Log.i(TAG, reason + " while charging -> FOLLOW");
+            SleepSyncPrefs.recordEvent(this, reason + ", charging → Syncthing FOLLOW");
+            SyncthingController.sendFollow(this);
+        } else {
+            Log.i(TAG, reason + " on battery -> STOP");
+            SleepSyncPrefs.recordEvent(this, reason + ", on battery → Syncthing STOP");
+            SyncthingController.sendStop(this);
+        }
+    }
+
+    private boolean isPluggedIn() {
+        Intent battery = registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        return battery != null && battery.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) != 0;
     }
 
     private void createNotificationChannel() {

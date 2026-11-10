@@ -9,6 +9,7 @@ final class SleepSyncPrefs {
     private static final String KEY_LAST_EVENT = "last_event";
     private static final String KEY_LAST_EVENT_TIME = "last_event_time";
     private static final String KEY_SELECTED_PACKAGE = "selected_syncthing_package";
+    private static final String KEY_FOLLOW_WHILE_CHARGING = "follow_while_charging";
 
     private SleepSyncPrefs() {}
 
@@ -18,6 +19,14 @@ final class SleepSyncPrefs {
 
     static void setEnabled(Context context, boolean enabled) {
         prefs(context).edit().putBoolean(KEY_ENABLED, enabled).apply();
+    }
+
+    static boolean isFollowWhileCharging(Context context) {
+        return prefs(context).getBoolean(KEY_FOLLOW_WHILE_CHARGING, false);
+    }
+
+    static void setFollowWhileCharging(Context context, boolean followWhileCharging) {
+        prefs(context).edit().putBoolean(KEY_FOLLOW_WHILE_CHARGING, followWhileCharging).apply();
     }
 
     static String getSelectedPackage(Context context) {
