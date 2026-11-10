@@ -15,6 +15,7 @@ On my **AYN Thor**, overnight battery drain dropped from about **14% to 2%** aft
 | Device state | SleepSync action |
 | --- | --- |
 | **Screen OFF** | Sends `STOP` to Syncthing-Fork |
+| **Screen OFF while charging** (optional, *Keep syncing while charging*) | Sends `FOLLOW`, so Syncthing keeps syncing on the charger; `STOP` again when the charger is unplugged |
 | **Screen ON** | Waits 1 second, then sends `FOLLOW` |
 | **Device reboot** | Starts again automatically if SleepSync was enabled |
 
